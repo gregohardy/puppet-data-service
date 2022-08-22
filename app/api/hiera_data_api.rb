@@ -7,6 +7,9 @@ App.post('/v1/hiera-data') do
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
+  if request.header.content_type
+
+  end
   body = JSON.parse(body_params)
   new_hiera_data = with_defaults(body['resources'], PDS::Model::HieraDatum)
 

@@ -1,13 +1,16 @@
 require 'json'
 require 'pds/model/node'
+require 'pds/helpers/data_helpers'
+
 
 App.post('/v1/nodes') do
   # TODO: validate input
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
-  body = JSON.parse(body_params)
-  new_nodes = with_defaults(body['resources'], PDS::Model::Node)
+  payload = PDS::Helpers::DataHelpers.convert_to_json!(body_params, request)
+  # GH: Content translations here
+  new_nodes = with_defaults(payload['resources'], PDS::Model::Node)
 
   begin
     timestamp!(new_nodes)
@@ -15,6 +18,8 @@ App.post('/v1/nodes') do
 
     status 201
     nodes_created.to_json
+    payload = PDS::Helpers::DataHelpers.convert_to_content_type!(body_params, request)
+
   rescue PDS::DataAdapter::Conflict => e
     render_error(400, 'Bad Request. Unable to create requested nodes, check for duplicate nodes', e.message)
   end

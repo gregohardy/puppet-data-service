@@ -3,6 +3,35 @@ require 'securerandom'
 module PDS
   module Helpers
     module DataHelpers
+      # handle_content_type converts all payloads from regarless of type to JSON
+      def convert_to_json!(body_params, request)
+        case request.header.content_type
+        when 'application/yaml'
+          payload = YAML.safe_load(body_params)
+          JSON.pretty_generate(payload)
+        when 'application/eyaml'
+          payload = YAML.safe_load(body_params)
+          JSON.pretty_generate(payload)
+
+        else
+          JSON.parse(body_params)
+        end
+      end
+
+      def convert_to_content_type!(body_params, request)
+        case request.header.content_type
+        when 'application/yaml'
+          payload = YAML.safe_load(body_params)
+          JSON.pretty_generate(payload)
+        when 'application/eyaml'
+          payload = YAML.safe_load(body_params)
+          JSON.pretty_generate(payload)
+
+        else
+          JSON.parse(body_params)
+        end
+      end
+
       # Set updated-at key of each submitted resource to Time.now. Add a
       # created-at key if it isn't already present.
       #
